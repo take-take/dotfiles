@@ -57,7 +57,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -119,31 +119,43 @@ fi
 export PATH="$HOME/.tfenv/bin:$PATH"
 # eval $(dircolors -b ~/.dircolors)
 
+function parse_git_dirty {
+    [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
+}
 function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ [\1]/'
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
 }
 
 function _emoji() {
-    echo -e '\U26C4'
+    echo -e '\U1F308'
 }
 
 function promps {
-    local  BLACK="\[\e[0;30m\]"
-    local  RED="\[\e[1;31m\]"
-    local  GREEN="\[\e[0;32m\]"
-    local  YELLOW="\[\e[0;33m\]"
-    local  BLUE="\[\e[0;34m\]"
-    local  PURPLE="\[\e[2;35m\]"
-    local  CYAN="\[\e[0;36m\]"
-    local  WHITE="\[\e[00m\]"
+
+    local  BLACK=$(tput setaf 0)
+    local  RED=$(tput setaf 1)
+    local  GREEN=$(tput setaf 2)
+    local  YELLOW=$(tput setaf 3)
+    local  BLUE=$(tput setaf 4)
+    local  PURPLE=$(tput setaf 5)
+    local  CYAN=$(tput setaf 6)
+    local  WHITE=$(tput setaf 7)
     local  GRAY="\[\e[1;37m\]"
 
     case $TERM in
         xterm*) TITLEBAR='\[\e]0;\W\007\]';;
         *)      TITLEBAR="";;
     esac
-    local BASE="\t"
-    PS1="${TITLEBAR}${GRAY}${BASE}${WHITE}$(_emoji)${CYAN}\W${PURPLE}\$(parse_git_branch)${BLUE}\$${WHITE} "
+
+    if [ -f ~/dotfiles/git-completion.bash -a -f ~/dotfiles/git-prompt.sh ]; then
+        source ~/dotfiles/git-completion.bash
+        GIT_PS1_SHOWDIRTYSTATE=1
+        source ~/dotfiles/git-prompt.sh
+        local BASE="\t"
+#        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]$(parse_git_branch)\\[${BLUE}\\]\$\\[${WHITE}\\] "
+#        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]$(__git_ps1)\\[${BLUE}\\]\$\\[${WHITE}\\] "
+        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]\\[${BLUE}\\]\$\\[${WHITE}\\] "
+    fi
 }
 promps
 export PATH="$PATH:/opt/mssql-tools/bin:/home/take/lambroll_v0.8.1_linux_amd64"
@@ -167,6 +179,9 @@ alias gsc='git switch -c '
 alias gpo='git push origin '
 alias ga='git add '
 alias gc='git commit'
-alias gp='git pull 'export PATH="$PATH:/opt/mssql-tools/bin"
+alias gp='git pull '
+alias gb='git branch '
+alias gd='cd /mnt/d/git'
 
+export PATH="$PATH:/opt/mssql-tools/bin"
 export PATH="$HOME/.tfenv/bin:$PATH"
