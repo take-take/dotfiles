@@ -132,14 +132,14 @@ function _emoji() {
 
 function promps {
 
-    local  BLACK=$(tput setaf 0)
-    local  RED=$(tput setaf 1)
-    local  GREEN=$(tput setaf 2)
-    local  YELLOW=$(tput setaf 3)
-    local  BLUE=$(tput setaf 4)
-    local  PURPLE=$(tput setaf 5)
-    local  CYAN=$(tput setaf 6)
-    local  WHITE=$(tput setaf 7)
+    local  BLACK=\\[$(tput setaf 0)\\]
+    local  RED=\\[$(tput setaf 1)\\]
+    local  GREEN=\\[$(tput setaf 2)\\]
+    local  YELLOW=\\[$(tput setaf 3)\\]
+    local  BLUE=\\[$(tput setaf 4)\\]
+    local  PURPLE=\\[$(tput setaf 5)\\]
+    local  CYAN=\\[$(tput setaf 6)\\]
+    local  WHITE=\\[$(tput setaf 7)\\]
     local  GRAY="\[\e[1;37m\]"
 
     case $TERM in
@@ -154,7 +154,7 @@ function promps {
         local BASE="\t"
 #        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]$(parse_git_branch)\\[${BLUE}\\]\$\\[${WHITE}\\] "
 #        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]$(__git_ps1)\\[${BLUE}\\]\$\\[${WHITE}\\] "
-        PS1="${TITLEBAR}\\[${WHITE}\\]${BASE}$(_emoji) \\[${CYAN}\\]\W\\[${PURPLE}\\]\\[${BLUE}\\]\$\\[${WHITE}\\] "
+        PS1="${TITLEBAR}${WHITE}${BASE}$(_emoji) ${CYAN}\W${PURPLE}${BLUE}\$${WHITE} "
     fi
 }
 promps
